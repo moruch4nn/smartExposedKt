@@ -23,27 +23,25 @@ fun <T, V> smartVariableWithAlias(column: Column<T>, alias: Alias<Table>, initBl
     return SmartVariableWithAlias(column = column, alias = alias, initBlock = initBlock, insertBlock = insertBlock)
 }
 
-fun <T> smartVariableWithDefault(column: Column<T>, defaultValue: T): SmartVariableWithDefault<T, T> {
+fun <T> smartVariableWithDefault(column: Column<T>, defaultValue: ()->T): SmartVariableWithDefault<T, T> {
     return SmartVariableWithDefault(column = column, defaultValue = defaultValue, initBlock = null, insertBlock = null)
 }
 
-fun <T, V> smartVariableWithDefault(column: Column<T>, defaultValue: V, initBlock: (T) -> V, insertBlock: (V)->T): SmartVariableWithDefault<T, V> {
+fun <T, V> smartVariableWithDefault(column: Column<T>, defaultValue: ()->V, initBlock: (T) -> V, insertBlock: (V)->T): SmartVariableWithDefault<T, V> {
     return SmartVariableWithDefault(column = column, defaultValue = defaultValue, initBlock = initBlock, insertBlock = insertBlock)
 }
 
-fun <T> smartVariableWithAliasAndDefault(column: Column<T>, alias: Alias<Table>, defaultValue: T): SmartVariableWithAliasAndDefault<T, T> {
+fun <T> smartVariableWithAliasAndDefault(column: Column<T>, alias: Alias<Table>, defaultValue: ()->T): SmartVariableWithAliasAndDefault<T, T> {
     return SmartVariableWithAliasAndDefault(column = column, alias = alias, defaultValue = defaultValue, initBlock = null, insertBlock = null)
 }
 
-fun <T, V> smartVariableWithAliasAndDefault(column: Column<T>, alias: Alias<Table>, defaultValue: V, initBlock: (T) -> V, insertBlock: (V)->T): SmartVariableWithAliasAndDefault<T, V> {
+fun <T, V> smartVariableWithAliasAndDefault(column: Column<T>, alias: Alias<Table>, defaultValue: ()->V, initBlock: (T) -> V, insertBlock: (V)->T): SmartVariableWithAliasAndDefault<T, V> {
     return SmartVariableWithAliasAndDefault(column = column, alias = alias, defaultValue = defaultValue, initBlock = initBlock, insertBlock = insertBlock)
 }
 
-class SmartVariableWithAliasAndDefault<T, V>(column: Column<T> , alias: Alias<Table>, defaultValue: V, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariableWithAlias<T, V> (column, alias = alias, initBlock = initBlock, insertBlock = insertBlock) {
-    init {
-        this.initialized = true
-        this.value = defaultValue
-    } }
+class SmartVariableWithAliasAndDefault<T, V>(column: Column<T> , alias: Alias<Table>, val defaultValue: ()->V, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariableWithAlias<T, V> (column, alias = alias, initBlock = initBlock, insertBlock = insertBlock) {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): V { return if(!this.initialized) { defaultValue() } else { super.getValue(thisRef, property) } }
+}
 
 open class SmartVariableWithAlias<T, V>(column: Column<T>, val alias: Alias<Table>, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
     override fun init(raw: ResultRow) {
@@ -51,11 +49,9 @@ open class SmartVariableWithAlias<T, V>(column: Column<T>, val alias: Alias<Tabl
     }
 }
 
-class SmartVariableWithDefault<T, V>(column: Column<T>, defaultValue: V, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
-    init {
-        this.initialized = true
-        this.value = defaultValue
-    } }
+class SmartVariableWithDefault<T, V>(column: Column<T>, val defaultValue: ()->V, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): V { return if(!this.initialized) { defaultValue() } else { super.getValue(thisRef, property) } }
+}
 
 open class SmartVariable<T: Any?, V: Any?>(
     open val column: Column<T>,
@@ -82,13 +78,13 @@ open class SmartVariable<T: Any?, V: Any?>(
         this.initialized = true
     }
 
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): V {
+    open operator fun getValue(thisRef: Any?, property: KProperty<*>): V {
         if(!initialized) { throw IllegalStateException("Variable ${property.name} is not initialized") }
         @Suppress("UNCHECKED_CAST")
         return this.value as V
     }
 
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: V) {
+    open operator fun setValue(thisRef: Any?, property: KProperty<*>, value: V) {
         this.value = value
         this.initialized = true
     }
