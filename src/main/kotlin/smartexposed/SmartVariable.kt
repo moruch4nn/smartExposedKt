@@ -41,6 +41,7 @@ fun <T, V> smartVariableWithAliasAndDefault(column: Column<T>, alias: Alias<Tabl
 
 class SmartVariableWithAliasAndDefault<T, V>(column: Column<T> , alias: Alias<Table>, defaultValue: V, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariableWithAlias<T, V> (column, alias = alias, initBlock = initBlock, insertBlock = insertBlock) {
     init {
+        this.initialized = true
         this.value = defaultValue
     } }
 
@@ -52,6 +53,7 @@ open class SmartVariableWithAlias<T, V>(column: Column<T>, val alias: Alias<Tabl
 
 class SmartVariableWithDefault<T, V>(column: Column<T>, defaultValue: V, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
     init {
+        this.initialized = true
         this.value = defaultValue
     } }
 
