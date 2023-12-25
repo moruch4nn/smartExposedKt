@@ -21,13 +21,11 @@ fun <T, V> smartVariableWithDefault(column: Column<T>, defaultValue: V, initBloc
     return SmartVariableWithDefault(column = column, defaultValue = defaultValue, initBlock = initBlock, insertBlock = insertBlock)
 }
 
-@Internal
 class SmartVariableWithDefault<T, V>(column: Column<T>, defaultValue: V, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
     init {
         this.value = defaultValue
     } }
 
-@Internal
 open class SmartVariable<T: Any?, V: Any?>(
     open val column: Column<T>,
     val initBlock: ((T)->V)?,
