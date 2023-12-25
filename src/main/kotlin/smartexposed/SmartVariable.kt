@@ -1,6 +1,7 @@
 @file:Suppress("unused")
 package smartexposed
 
+import org.jetbrains.annotations.ApiStatus.Internal
 import org.jetbrains.exposed.sql.Column
 import kotlin.reflect.KProperty
 
@@ -20,12 +21,14 @@ fun <T, V> smartVariableWithDefault(column: Column<T>, defaultValue: V, initBloc
     return SmartVariableWithDefault(column = column, defaultValue = defaultValue, initBlock = initBlock, insertBlock = insertBlock)
 }
 
-open class SmartVariableWithDefault<T, V>(column: Column<T>, defaultValue: V, initBlock: (T) -> V, insertBlock: (V)->T): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
+@Internal
+class SmartVariableWithDefault<T, V>(column: Column<T>, defaultValue: V, initBlock: (T) -> V, insertBlock: (V)->T): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
     init {
         this.value = defaultValue
     } }
 
-open class SmartVariable<T, V>(
+@Internal
+open class SmartVariable<T: Any?, V: Any?>(
     open val column: Column<T>,
     val initBlock: (T)->V,
     val insertBlock: (V)->T
@@ -33,10 +36,10 @@ open class SmartVariable<T, V>(
     protected var value: V? = null
     var initialized = false
 
-    open fun valueForInsert(): T {
+    open fun valueForInsert(): Any? {
         if(!initialized) { throw IllegalStateException("Variable is not initialized") }
         @Suppress("UNCHECKED_CAST")
-        return insertBlock(this.value as V)
+        return insertBlock(this.value as V) as Any
     }
 
     open fun init(value: T) {
