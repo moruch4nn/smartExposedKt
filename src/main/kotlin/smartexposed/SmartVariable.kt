@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.Column
 import kotlin.reflect.KProperty
 
 fun <T> smartVariable(column: Column<T>): SmartVariable<T, T> {
-    return SmartVariable(column = column, initBlock = { it }, insertBlock = { it })
+    return SmartVariable(column = column, initBlock = null, insertBlock = null)
 }
 
 fun <T, V> smartVariable(column: Column<T>, initBlock: (T) -> V, insertBlock: (V) -> T): SmartVariable<T, V> {
@@ -14,7 +14,7 @@ fun <T, V> smartVariable(column: Column<T>, initBlock: (T) -> V, insertBlock: (V
 }
 
 fun <T> smartVariableWithDefault(column: Column<T>, defaultValue: T): SmartVariableWithDefault<T, T> {
-    return SmartVariableWithDefault(column = column, defaultValue = defaultValue, initBlock = { it }, insertBlock = { it })
+    return SmartVariableWithDefault(column = column, defaultValue = defaultValue, initBlock = null, insertBlock = null)
 }
 
 fun <T, V> smartVariableWithDefault(column: Column<T>, defaultValue: V, initBlock: (T) -> V, insertBlock: (V)->T): SmartVariableWithDefault<T, V> {
@@ -22,7 +22,7 @@ fun <T, V> smartVariableWithDefault(column: Column<T>, defaultValue: V, initBloc
 }
 
 @Internal
-class SmartVariableWithDefault<T, V>(column: Column<T>, defaultValue: V, initBlock: (T) -> V, insertBlock: (V)->T): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
+class SmartVariableWithDefault<T, V>(column: Column<T>, defaultValue: V, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
     init {
         this.value = defaultValue
     } }
