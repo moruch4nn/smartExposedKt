@@ -1,9 +1,10 @@
 plugins {
     kotlin("jvm") version "2.0.0-Beta1"
     kotlin("plugin.serialization") version "2.0.0-Beta1"
+    `maven-publish`
 }
 
-group = "dev.mr3n"
+group = "smartexposed"
 version = "0.7"
 
 repositories {
@@ -15,9 +16,18 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
 kotlin {
     jvmToolchain(8)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "smartExposedKt"
+            version = project.version.toString()
+            groupId = "smartexposed"
+
+            from(components["kotlin"])
+        }
+    }
 }
