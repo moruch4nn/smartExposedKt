@@ -30,12 +30,15 @@ open class SmartVariable<T, V>(
     val initBlock: (T)->V
 ) {
     var value: V? = null
+    var initialized = false
 
     open fun init(value: T) {
         this.value = initBlock(value)
+        this.initialized = true
     }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): V {
+        if(!initialized) { throw IllegalStateException("Variable ${property.name} is not initialized") }
         @Suppress("UNCHECKED_CAST")
         return this.value as V
     }
