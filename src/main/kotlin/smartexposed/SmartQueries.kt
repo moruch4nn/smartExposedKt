@@ -31,14 +31,16 @@ inline fun <reified T: Any> ResultRow.injectTo(instance: T) {
 inline fun <reified I: Any, reified T: Table> T.smartInsert(instance: I): InsertStatement<Number> {
     return this.insert {  insertStatement ->
         instance.smartVariables().forEach { delegate ->
+            if(!delegate.initialized) { return@forEach }
             @Suppress("UNCHECKED_CAST")
             insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).value
         } }
 }
 
-inline fun <reified I: Any, reified T: Table> T.smartUpsert(instance: I): InsertStatement<Long> {
-    return this.upsert {  insertStatement ->
+inline fun <reified I: Any, reified T: Table> T.smartUpsert(instance: I, vararg keys: Column<*>, onUpdate: List<Pair<Column<*>, Expression<*>>>? = null, noinline where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null): InsertStatement<Long> {
+    return this.upsert(keys = keys, where = where, onUpdate = onUpdate) {  insertStatement ->
         instance.smartVariables().forEach { delegate ->
+            if(!delegate.initialized) { return@forEach }
             @Suppress("UNCHECKED_CAST")
             insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).value
         } }
@@ -47,6 +49,16 @@ inline fun <reified I: Any, reified T: Table> T.smartUpsert(instance: I): Insert
 inline fun <reified I: Any, reified T: Table> T.smartInsertIgnore(instance: I): InsertStatement<Long> {
     return this.insertIgnore {  insertStatement ->
         instance.smartVariables().forEach { delegate ->
+            if(!delegate.initialized) { return@forEach }
+            @Suppress("UNCHECKED_CAST")
+            insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).value
+        } }
+}
+
+inline fun <reified I: Any, reified T: Table> T.smartUpdate(instance: I, noinline where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null, limit: Int? = null): Int {
+    return this.update(where = where, limit = limit) {  insertStatement ->
+        instance.smartVariables().forEach { delegate ->
+            if(!delegate.initialized) { return@forEach }
             @Suppress("UNCHECKED_CAST")
             insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).value
         } }
