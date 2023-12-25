@@ -9,7 +9,7 @@ import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
 
 
-inline fun <reified T: Any> Query.executeAsSmart(): List<T> = this.map(T::class.initializeWithEmptyConstructor()::onInjectFrom)
+inline fun <reified T: Any> Query.executeAsSmart(): List<T> = this.map { T::class.initializeWithEmptyConstructor().onInjectFrom(it) }
 
 inline fun <reified T: Any> T.smartVariables(): List<SmartVariable<*, *>> {
     return this::class.declaredMemberProperties.mapNotNull { field ->
@@ -69,6 +69,6 @@ inline fun <reified T: Any> Class<T>.initializeWithEmptyConstructor(): T { retur
 inline fun <reified T: Any> KClass<T>.initializeWithEmptyConstructor(): T = this.java.initializeWithEmptyConstructor()
 
 inline fun <reified T: Any> Collection<ResultRow>.deserializeAsSmart(): List<T> {
-    val resultList = this.map(T::class.initializeWithEmptyConstructor()::onInjectFrom)
+    val resultList = this.map { T::class.initializeWithEmptyConstructor().onInjectFrom(it) }
     return resultList
 }
