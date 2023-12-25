@@ -30,8 +30,8 @@ class SmartVariableWithDefault<T, V>(column: Column<T>, defaultValue: V, initBlo
 @Internal
 open class SmartVariable<T: Any?, V: Any?>(
     open val column: Column<T>,
-    val initBlock: (T)->V,
-    val insertBlock: (V)->T
+    val initBlock: ((T)->V)?,
+    val insertBlock: ((V)->T)?
 ) {
     protected var value: V? = null
     var initialized = false
@@ -39,11 +39,12 @@ open class SmartVariable<T: Any?, V: Any?>(
     open fun valueForInsert(): Any? {
         if(!initialized) { throw IllegalStateException("Variable is not initialized") }
         @Suppress("UNCHECKED_CAST")
-        return insertBlock(this.value as V) as Any
+        return (insertBlock?.let { it(this.value as V) }?: this.value) as Any
     }
 
     open fun init(value: T) {
-        this.value = initBlock(value)
+        @Suppress("UNCHECKED_CAST")
+        this.value = (initBlock?.let { it(value) } ?:value) as V
         this.initialized = true
     }
 
