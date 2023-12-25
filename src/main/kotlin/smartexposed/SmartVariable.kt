@@ -1,7 +1,6 @@
 @file:Suppress("unused")
 package smartexposed
 
-import org.jetbrains.annotations.ApiStatus.Internal
 import org.jetbrains.exposed.sql.Column
 import kotlin.reflect.KProperty
 
