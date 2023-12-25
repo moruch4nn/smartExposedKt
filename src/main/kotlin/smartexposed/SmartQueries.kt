@@ -3,7 +3,6 @@ package smartexposed
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
-import java.lang.reflect.Field
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
@@ -31,6 +30,14 @@ inline fun <reified T: Any> ResultRow.injectTo(instance: T) {
 
 inline fun <reified I: Any, reified T: Table> T.smartInsert(instance: I): InsertStatement<Number> {
     return this.insert {  insertStatement ->
+        instance.smartVariables().forEach { delegate ->
+            @Suppress("UNCHECKED_CAST")
+            insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).value
+        } }
+}
+
+inline fun <reified I: Any, reified T: Table> T.smartUpsert(instance: I): InsertStatement<Long> {
+    return this.upsert {  insertStatement ->
         instance.smartVariables().forEach { delegate ->
             @Suppress("UNCHECKED_CAST")
             insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).value
