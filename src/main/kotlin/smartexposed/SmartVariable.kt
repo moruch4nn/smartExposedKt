@@ -1,13 +1,6 @@
 @file:Suppress("unused")
 package smartexposed
 
-import kotlinx.serialization.*
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.descriptors.*
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.encoding.decodeStructure
-import kotlinx.serialization.json.JsonElement
 import org.jetbrains.exposed.sql.Column
 import kotlin.reflect.KProperty
 
