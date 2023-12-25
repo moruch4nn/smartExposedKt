@@ -33,7 +33,7 @@ inline fun <reified I: Any, reified T: Table> T.smartInsert(instance: I): Insert
         instance.smartVariables().forEach { delegate ->
             if(!delegate.initialized) { return@forEach }
             @Suppress("UNCHECKED_CAST")
-            insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).value
+            insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
         } }
 }
 
@@ -42,7 +42,7 @@ inline fun <reified I: Any, reified T: Table> T.smartUpsert(instance: I, vararg 
         instance.smartVariables().forEach { delegate ->
             if(!delegate.initialized) { return@forEach }
             @Suppress("UNCHECKED_CAST")
-            insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).value
+            insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
         } }
 }
 
@@ -51,7 +51,7 @@ inline fun <reified I: Any, reified T: Table> T.smartInsertIgnore(instance: I): 
         instance.smartVariables().forEach { delegate ->
             if(!delegate.initialized) { return@forEach }
             @Suppress("UNCHECKED_CAST")
-            insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).value
+            insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
         } }
 }
 
@@ -60,7 +60,7 @@ inline fun <reified I: Any, reified T: Table> T.smartUpdate(instance: I, noinlin
         instance.smartVariables().forEach { delegate ->
             if(!delegate.initialized) { return@forEach }
             @Suppress("UNCHECKED_CAST")
-            insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).value
+            insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
         } }
 }
 

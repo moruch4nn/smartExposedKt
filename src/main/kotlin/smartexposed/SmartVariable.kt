@@ -30,8 +30,14 @@ open class SmartVariable<T, V>(
     val initBlock: (T)->V,
     val insertBlock: (V)->T
 ) {
-    var value: V? = null
+    protected var value: V? = null
     var initialized = false
+
+    open fun valueForInsert(): T {
+        if(!initialized) { throw IllegalStateException("Variable is not initialized") }
+        @Suppress("UNCHECKED_CAST")
+        return insertBlock(this.value as V)
+    }
 
     open fun init(value: T) {
         this.value = initBlock(value)
