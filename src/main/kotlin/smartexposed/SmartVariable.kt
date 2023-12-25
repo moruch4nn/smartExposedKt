@@ -45,5 +45,6 @@ open class SmartVariable<T, V>(
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: V) {
         this.value = value
+        this.initialized = true
     }
 }
