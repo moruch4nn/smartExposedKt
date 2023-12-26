@@ -40,9 +40,9 @@ fun <T, V> smartVariableWithAliasAndDefault(column: Column<T>, alias: Alias<Tabl
 }
 
 class SmartVariableWithAliasAndDefault<T, V>(column: Column<T> , alias: Alias<Table>, val defaultValue: ()->V, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariableWithAlias<T, V> (column, alias = alias, initBlock = initBlock, insertBlock = insertBlock) {
-    override fun getValue(thisRef: Any?, property: KProperty<*>): V { return if(!this.initialized) { defaultValue() } else { super.getValue(thisRef, property) } }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): V { return if(!this.initialized || value == null) { defaultValue() } else { super.getValue(thisRef, property) } }
 
-    override fun valueForInsert(): Any? { return if(!initialized) { defaultValue() } else { super.valueForInsert() } }
+    override fun valueForInsert(): Any? { return if(!initialized || value == null) { defaultValue() } else { super.valueForInsert() } }
 }
 
 open class SmartVariableWithAlias<T, V>(column: Column<T>, val alias: Alias<Table>, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
@@ -56,9 +56,9 @@ open class SmartVariableWithAlias<T, V>(column: Column<T>, val alias: Alias<Tabl
 }
 
 class SmartVariableWithDefault<T, V>(column: Column<T>, val defaultValue: ()->V, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
-    override fun getValue(thisRef: Any?, property: KProperty<*>): V { return if(!this.initialized) { defaultValue() } else { super.getValue(thisRef, property) } }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): V { return if(!this.initialized || value == null) { defaultValue() } else { super.getValue(thisRef, property) } }
 
-    override fun valueForInsert(): Any? { return if(!initialized) { defaultValue() } else { super.valueForInsert() } }
+    override fun valueForInsert(): Any? { return if(!initialized || value == null) { defaultValue() } else { super.valueForInsert() } }
 }
 
 open class SmartVariable<T: Any?, V: Any?>(
