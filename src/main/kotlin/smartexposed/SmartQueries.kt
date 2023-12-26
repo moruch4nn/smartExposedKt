@@ -33,6 +33,7 @@ inline fun <reified I: Any, reified T: Table> T.smartInsert(instance: I): Insert
     return this.insert {  insertStatement ->
         instance.smartVariables().forEach { delegate ->
             try {
+                if(delegate.column.table.tableName != this@smartInsert.tableName) { return@forEach }
                 @Suppress("UNCHECKED_CAST")
                 insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
             } catch (_: IllegalStateException) { }
@@ -43,6 +44,7 @@ inline fun <reified I: Any, reified T: Table> T.smartUpsert(instance: I, vararg 
     return this.upsert(keys = keys, where = where, onUpdate = onUpdate) {  insertStatement ->
         instance.smartVariables().forEach { delegate ->
             try {
+                if(delegate.column.table.tableName != this@smartUpsert.tableName) { return@forEach }
                 @Suppress("UNCHECKED_CAST")
                 insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
             } catch (_: IllegalStateException) { }
@@ -53,6 +55,7 @@ inline fun <reified I: Any, reified T: Table> T.smartInsertIgnore(instance: I): 
     return this.insertIgnore {  insertStatement ->
         instance.smartVariables().forEach { delegate ->
             try {
+                if(delegate.column.table.tableName != this@smartInsertIgnore.tableName) { return@forEach }
                 @Suppress("UNCHECKED_CAST")
                 insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
             } catch (_: IllegalStateException) { }
@@ -63,6 +66,7 @@ inline fun <reified I: Any, reified T: Table> T.smartUpdate(instance: I, noinlin
     return this.update(where = where, limit = limit) {  insertStatement ->
         instance.smartVariables().forEach { delegate ->
             try {
+                if(delegate.column.table.tableName != this@smartUpdate.tableName) { return@forEach }
                 @Suppress("UNCHECKED_CAST")
                 insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
             } catch (_: IllegalStateException) { }
