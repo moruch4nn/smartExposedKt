@@ -23,9 +23,10 @@ inline fun <reified T: Any> T.smartVariables(): List<SmartVariable<*, *>> {
 
 inline fun <reified T: Any> ResultRow.injectTo(instance: T) {
     instance.smartVariables().forEach { delegate ->
-        if(!this.hasValue(delegate.column)) { return@forEach }
-        @Suppress("UNCHECKED_CAST")
-        (delegate as SmartVariable<Any?, Any?>).init(this)
+        try {
+            @Suppress("UNCHECKED_CAST")
+            (delegate as SmartVariable<Any?, Any?>).init(this)
+        } catch (_: IllegalStateException) { }
     }
 }
 

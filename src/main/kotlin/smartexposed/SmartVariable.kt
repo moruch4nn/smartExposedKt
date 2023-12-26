@@ -46,6 +46,10 @@ class SmartVariableWithAliasAndDefault<T, V>(column: Column<T> , alias: Alias<Ta
 }
 
 open class SmartVariableWithAlias<T, V>(column: Column<T>, val alias: Alias<Table>, initBlock: ((T)->V)?, insertBlock: ((V)->T)?): SmartVariable<T, V> (column, initBlock = initBlock, insertBlock = insertBlock) {
+    override fun exists(raw: ResultRow): Boolean {
+        return raw.hasValue(alias[column])
+    }
+
     override fun init(raw: ResultRow) {
         this._init(raw[alias[column]])
     }
@@ -70,6 +74,8 @@ open class SmartVariable<T: Any?, V: Any?>(
         @Suppress("UNCHECKED_CAST")
         return (insertBlock?.let { it(this.value as V) }?: this.value) as Any
     }
+
+    open fun exists(raw: ResultRow): Boolean { return raw.hasValue(column) }
 
     open fun init(raw: ResultRow) {
         this._init(raw[column])
