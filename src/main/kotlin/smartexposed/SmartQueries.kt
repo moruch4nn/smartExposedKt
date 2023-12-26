@@ -35,7 +35,7 @@ inline fun <reified I: Any, reified T: Table> T.smartInsert(instance: I): Insert
             try {
                 @Suppress("UNCHECKED_CAST")
                 insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
-            } catch (_: Exception) { }
+            } catch (_: IllegalStateException) { }
         } }
 }
 
@@ -45,7 +45,7 @@ inline fun <reified I: Any, reified T: Table> T.smartUpsert(instance: I, vararg 
             try {
                 @Suppress("UNCHECKED_CAST")
                 insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
-            } catch (_: Exception) { }
+            } catch (_: IllegalStateException) { }
         } }
 }
 
@@ -55,7 +55,7 @@ inline fun <reified I: Any, reified T: Table> T.smartInsertIgnore(instance: I): 
             try {
                 @Suppress("UNCHECKED_CAST")
                 insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
-            } catch (_: Exception) { }
+            } catch (_: IllegalStateException) { }
         } }
 }
 
@@ -65,7 +65,7 @@ inline fun <reified I: Any, reified T: Table> T.smartUpdate(instance: I, noinlin
             try {
                 @Suppress("UNCHECKED_CAST")
                 insertStatement[delegate.column as Column<Any?>] = (delegate as SmartVariable<Any?, Any?>).valueForInsert()
-            } catch (_: Exception) { }
+            } catch (_: IllegalStateException) { }
         } }
 }
 
